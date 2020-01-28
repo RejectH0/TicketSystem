@@ -29,16 +29,26 @@ namespace TicketSystem
 
     }
 
-    class Person
+    class Person : IDisposable
     {
-        public int idNumber;
+        static private int idNext = 0;
+        static private int idDestroy = -1;
+        public int idNumber { get; private set; }
         public String FullName { get; set; }
         public String Email { get; set; }
         public String Phone { get; set; }
 
         public Person(int idNumber, String FullName, String Email, String Phone)
         {
-            this.idNumber = idNumber;
+            if(idDestroy == -1)
+            {
+                this.idNumber = Person.idNext;
+                Person.idNext++;
+            } else
+            {
+                this.idNumber = Person.idDestroy;
+            }
+
             this.FullName = FullName;
             this.Email = Email;
             this.Phone = Phone;
@@ -47,6 +57,11 @@ namespace TicketSystem
         public override string ToString()
         {
             return base.ToString();
+        }
+
+        public void Dispose()
+        {
+            Person.idDestroy = this.idNumber;
         }
 
         public static implicit operator Person(string v)
@@ -85,8 +100,6 @@ namespace TicketSystem
                 "Read File",
                 "Create File"
             };
-
-
         }
 
         public static void ReadFile()
