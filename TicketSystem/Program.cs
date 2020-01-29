@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace TicketSystem
 {
+    // Version 0.2a //28JAN2020 //1850
     class Ticket
     {
         public int TicketNumber;
@@ -38,7 +39,7 @@ namespace TicketSystem
         public String Email { get; set; }
         public String Phone { get; set; }
 
-        public Person(int idNumber, String FullName, String Email, String Phone)
+        public Person(String FullName, String Email, String Phone)
         {
             if(idDestroy == -1)
             {
@@ -78,7 +79,7 @@ namespace TicketSystem
 
             for (int i = 0; i < vals.Length; i++)
             {
-                Person person = new Person(0, vals[i], "null", "null");
+                Person person = new Person(vals[i], "null", "null");
             }
         }
     }
@@ -86,20 +87,50 @@ namespace TicketSystem
     {
         public static void Main(string[] args)
         {
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
+            DisplayHeader();
             DisplayMenu();
-
-
         }
 
+        public static void DisplayHeader()
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write("*");
+            }
+            
+            int winWidth = Console.WindowWidth - 1;
+            Console.SetCursorPosition(winWidth, 1);
+            Console.Write("*");
+
+            Console.SetCursorPosition(0, 2);
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write("*");
+            }
+            string menuText = "Welcome to the Gregg Sperling Ticket System!";
+            Console.SetCursorPosition(0, 1);
+            Console.WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (menuText.Length / 2)) + "}", menuText));
+            Console.SetCursorPosition(0, 1);
+            Console.Write("*");
+            Console.SetCursorPosition(0, 5);
+        }
         public static void DisplayMenu()
         {
             string[] menuChoices = new string[]
             {
                 "Read File",
-                "Create File"
+                "Create File",
+                "End Program"
             };
+
+            for (int i = 0; i < menuChoices.Length; i++)
+            {
+                Console.WriteLine((i+1) + ": "+menuChoices[i]);
+            }
+
+
         }
 
         public static void ReadFile()
