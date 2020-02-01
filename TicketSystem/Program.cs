@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TicketSystem
 {
-    // Version 0.2a //28JAN2020 //1850
+    // Version 0.3a //01FEB2020 1415
     class Ticket
     {
         public int TicketNumber;
@@ -65,10 +65,7 @@ namespace TicketSystem
             Person.idDestroy = this.idNumber;
         }
 
-        public static implicit operator Person(string v)
-        {
-            throw new NotImplementedException();
-        }
+        public static implicit operator Person(string v) => new Person(v, "null", "null");
     }
 
     class People
@@ -135,7 +132,7 @@ namespace TicketSystem
 
         public static void ReadFile()
         {
-            string fileData = "fileData.txt";
+            string fileData = "tickets.csv";
             if (File.Exists(fileData))
             {
                 StreamReader sr = new StreamReader(fileData);
@@ -150,10 +147,19 @@ namespace TicketSystem
                     if (!arr[0].All(char.IsDigit))
                     {
                         Console.WriteLine("Found Header Row!");
+                        Console.WriteLine("{0,5}{1,15}{2,15}{3,15}{4,15}{5,15}{6,15}", new object[] { arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]});
                     }
                     else
                     {
-                        Ticket ticket = new Ticket(Int32.Parse(arr[0]), arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
+                        int importTicketNumber = 65535;
+                        try
+                        {
+                            importTicketNumber = Int32.Parse(arr[0]);
+                        } catch
+                        {
+                            importTicketNumber = 65535;
+                        }
+                        Ticket ticket = new Ticket(importTicketNumber, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
                     }
                 }
 
@@ -169,9 +175,9 @@ namespace TicketSystem
 
         public static void WriteFile()
         {
-            string fileData = "fileData.txt";
+            string fileData = "tickets.csv";
             StreamWriter sw = new StreamWriter(fileData, true);
-            sw.WriteLine("Header Row"); // Header Row goes here
+            sw.Write("TicketID, Summary, Status, Priority, Submitter, Assigned, Watching1|Watching2\n");
                                         // write the code to write out the file data.
 
             sw.Close();
