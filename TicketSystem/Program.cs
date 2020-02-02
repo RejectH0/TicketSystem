@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TicketSystem
 {
-    // Version 1.0 //02FEB2020 0605
+    // Version 1.1 //02FEB2020 1510
     class Ticket : IDisposable
     {
         private static int idNext = 1;
@@ -37,7 +37,7 @@ namespace TicketSystem
             this.Status = Status;
             this.Priority = Priority;
 
-            if (Person.AllPeople.Any(item => item.Equals(Submitter)))
+            if (Person.AllPeople.Any(item => item.FullName.Equals(Submitter)))
             {
                 this.Submitter = Person.AllPeople.Find(item => item.FullName.Equals(Submitter));
             }
