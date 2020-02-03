@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TicketSystem
 {
-    // Version 1.1 //02FEB2020 1510
+    // Version 1.2 //02FEB2020 1945
     class Ticket : IDisposable
     {
         private static int idNext = 1;
@@ -56,20 +56,22 @@ namespace TicketSystem
             }
 
             this.Watching = new WatcherList<Person>();
-
-            var personList = Watching.Split('|');
-
-            for (int g = 0; g < personList.Length; g++)
+            if (!(Watching == null || Watching.Equals("none")))
             {
-                if (Person.AllPeople.Any(item => item.FullName.Equals(personList[g])))
+                var personList = Watching.Split('|');
+
+                for (int g = 0; g < personList.Length; g++)
                 {
-                    this.Watching.Add(Person.AllPeople.Find(item => item.FullName.Equals(personList[g])));
+                    if (Person.AllPeople.Any(item => item.FullName.Equals(personList[g])))
+                    {
+                        this.Watching.Add(Person.AllPeople.Find(item => item.FullName.Equals(personList[g])));
+                    }
+                    else
+                    {
+                        this.Watching.Add(new Person(personList[g]));
+                    }
                 }
-                else
-                {
-                    this.Watching.Add(new Person(personList[g]));
-                }
-            }
+            } 
 
         }
         public Ticket(String Summary, String Status, String Priority, Person Submitter, Person Assigned, List<Person> Watching)
@@ -107,14 +109,19 @@ namespace TicketSystem
             {
                 var str = "";
                 int thisCount = this.Count();
-                if (thisCount > 0)
+                if (thisCount > 1)
                 {
                     for (int g = 0; g < thisCount; g++)
                     {
                         str += this.ElementAt(g) + "|";
                     }
+                    return str.Substring(0, (str.Length) - 1);
+                } else
+                {
+                    str += this.ElementAt(0);
+                    return str;
                 }
-                return str.Substring(0, (str.Length) - 1);
+                
             }
         }
 
@@ -344,59 +351,62 @@ namespace TicketSystem
             Console.SetCursorPosition(75, 8);
             Console.WriteLine("Ticket Priority : {0}", ticketPriority);
             Console.SetCursorPosition(0, 7);
-            ConsoleSpaces(40);
+            ConsoleSpaces(50,5);
             Console.SetCursorPosition(0, 7);
             Console.WriteLine("Please choose Summary Selection:");
             string ticketSummary = MenuItemSelection(summarySelection);
             Console.SetCursorPosition(75, 9);
             Console.WriteLine("Ticket Summary  : {0}", ticketSummary);
             Console.SetCursorPosition(0, 7);
-            ConsoleSpaces(40);
+            ConsoleSpaces(50, 5);
             Console.SetCursorPosition(0, 7);
             Console.WriteLine("Who is submitting this ticket?");
             Person ticketSubmitter = MenuItemPersonSelection();
             Console.SetCursorPosition(75, 10);
             Console.WriteLine("Ticket Submitter: {0}", ticketSubmitter);
             Console.SetCursorPosition(0, 7);
-            ConsoleSpaces(40);
+            ConsoleSpaces(50,5);
             Console.SetCursorPosition(0, 7);
             Console.WriteLine("Please assign this ticket: ");
             Person ticketAssigned = MenuItemPersonSelection();
             Console.SetCursorPosition(75, 11);
             Console.WriteLine("Ticket Assigned : {0}", ticketAssigned);
 
-            string userResponse = "Y";
+            ConsoleKey userResponse;
+            //string Key;
             List<Person> watchers = new List<Person>();
 
-            while (userResponse.Equals("Y"))
+            do
             {
                 Console.SetCursorPosition(0, 7);
-                ConsoleSpaces(40);
+                ConsoleSpaces(60,10);
                 Console.SetCursorPosition(0, 7);
                 Console.WriteLine("Please choose who will watch this ticket:");
                 Person watcher = MenuItemPersonSelection();
-                watchers.Add(watcher); 
+                watchers.Add(watcher);
                 Console.SetCursorPosition(75, (11 + (watchers.Count())));
-                Console.WriteLine("Watcher #{0}: {1}",watchers.Count(),watcher);
+                Console.WriteLine("Watcher #{0}: {1}", watchers.Count(), watcher);
                 Console.SetCursorPosition(0, 7);
-                ConsoleSpaces(40);
+                ConsoleSpaces(60,10);
                 Console.SetCursorPosition(0, 7);
                 Console.WriteLine("Would you like to add another Watcher? (Y/N): ");
-                userResponse = Console.ReadLine().ToUpper();
+                userResponse = Console.ReadKey(true).Key;
                 Console.SetCursorPosition(0, 7);
-                ConsoleSpaces(50);
-            }
-            tickets.Add(new Ticket(ticketSummary, ticketStatus, ticketPriority, ticketSubmitter, ticketAssigned, watchers));
+                ConsoleSpaces(60,10);
+            } while (userResponse == ConsoleKey.Y);
 
+            tickets.Add(new Ticket(ticketSummary, ticketStatus, ticketPriority, ticketSubmitter, ticketAssigned, watchers));
+            Console.SetCursorPosition(75, 11);
             PressEnterToContinue();
         }
 
-        private void ConsoleSpaces(int spaces)
+        private void ConsoleSpaces(int spaces, int lines)
         {
             int cursorLeft = Console.CursorLeft;
             int cursorTop = Console.CursorTop;
-
-            for (int i = 0; i < 10; i++)
+            
+            
+            for (int i = 0; i < lines; i++)
             {
                 Console.SetCursorPosition(cursorLeft, cursorTop + i);
                 for (int g = 0; g < spaces; g++)
@@ -426,10 +436,10 @@ namespace TicketSystem
             Console.CursorVisible = true;
             
             if (str.Equals("[New]")) {
-                Console.SetCursorPosition(20, 15);
+                Console.SetCursorPosition(10, 5);
                 string newName = getStringValue("Please enter the person's Full Name");
-                Console.SetCursorPosition(20, 15);
-                ConsoleSpaces(60);
+                Console.SetCursorPosition(10, 5);
+                ConsoleSpaces(50,2);
                 new Person(newName);
                 return Person.AllPeople.Find(item => item.FullName.Equals(newName));
             } else
@@ -517,13 +527,26 @@ namespace TicketSystem
 
             Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,-20}\n", "TicketID", "Summary", "Status", "Priority", "Submitter", "Assigned", "Watching");
 
-            foreach (var item in tickets)
+            var ticketsCount = tickets.Count();
+            for (int g = 0; g < ticketsCount; g++)
             {
-                Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,-30}\n", item.TicketNumber, item.Summary, item.Status, item.Priority, item.Submitter, item.Assigned, item.Watching);
+                bool isEmpty = !tickets[g].Watching.Any();
+                if (isEmpty)
+                {
+                    Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,-30}\n", tickets[g].TicketNumber, tickets[g].Summary, tickets[g].Status, tickets[g].Priority, tickets[g].Submitter, tickets[g].Assigned, "none");
+                } else
+                {
+                    Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,-30}\n", tickets[g].TicketNumber, tickets[g].Summary, tickets[g].Status, tickets[g].Priority, tickets[g].Submitter, tickets[g].Assigned, tickets[g].Watching);
+                }
             }
 
             PressEnterToContinue();
 
+        }
+        private static void Dump(object o)
+        {
+            string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+            Console.WriteLine(json);
         }
         public void ListAllPeople()
         {
@@ -556,7 +579,8 @@ namespace TicketSystem
         public void PressEnterToContinue()
         {
             Console.Write("Press Enter To Continue: ");
-            Console.ReadLine();
+            Console.ReadKey(false);
+            Console.WriteLine();
         }
 
         private string getStringValue(String prompt)
@@ -611,24 +635,36 @@ namespace TicketSystem
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
-                    string[] arr = line.Split(',');
+                    List<string> list = new List<string>(line.Split(','));
+                    
+                    // handling for blank lines in the file
+                    if (list.Count() == 1)
+                    {
+                        continue;
+                    }
+
+                    // handling for a blank Watchers field
+                    if (list.Count() == 6)
+                    {
+                        list.Add("none");
+                    }
                     // remember there's a header row!
                     // TicketID, Summary, Status, Priority, Submitter, Assigned, Watching
                     // 1,This is a bug ticket,Open,High,Drew Kjell,Jane Doe,Drew Kjell|John Smith|Bill Jones
-                    if (!arr[0].All(char.IsDigit))
+                    if (!list[0].All(char.IsDigit))
                     {
                         // The first field is NOT all digits, therefore this is our Header Row. Let's display it on the console for reasons.
-                        Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,25}\n", new object[] { arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6] });
+                        Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,25}\n", list.ToArray());
                     }
                     else
                     {
-                        // we're actually discarding the ticket's number as saved in the file (arr[0]) because the Ticket() 
+                        // we're actually discarding the ticket's number as saved in the file (list[0]) because the Ticket() 
                         // constructor takes care of all ticket number creation.
                         // if user does not read file first and instead enters new tickets first, reading the file could result
                         // in overwriting or loss of data, so we'll just let the constructor deal with adding the ticket number.
                         // BUT, we'll display the ticket numbers from the file anyway, because why not?
-                        Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,25}\n", new object[] { arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6] });
-                        tickets.Add(new Ticket(arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]));
+                        Console.Write("{0,-10}{1,-25}{2,-10}{3,-10}{4,-15}{5,-15}{6,25}\n", list.ToArray());
+                        tickets.Add(new Ticket(list[1], list[2], list[3], list[4], list[5], list[6]));
                     }
                 }
 
