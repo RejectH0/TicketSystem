@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TicketSystem
 {
-    // Version 1.3 //02FEB2020 2000
+    // Version 1.4 //10FEB2020 2000
     class Ticket : IDisposable
     {
         private static int idNext = 1;
@@ -201,57 +201,10 @@ namespace TicketSystem
         public Program()
         {
             RunMainMenu();
-
         }
         public static void Main(string[] args)
         {
             new Program();
-        }
-
-        public void DisplayHeader()
-        {
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
-            for (int i = 0; i < Console.WindowWidth; i++)
-            {
-                Console.Write("*");
-            }
-
-            int winWidth = Console.WindowWidth - 1;
-            Console.SetCursorPosition(winWidth, 1);
-            Console.Write("*");
-
-            Console.SetCursorPosition(0, 2);
-            for (int i = 0; i < Console.WindowWidth; i++)
-            {
-                Console.Write("*");
-            }
-            string menuText = "Welcome to the Gregg Sperling Ticket System!";
-            Console.SetCursorPosition(0, 1);
-            Console.WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (menuText.Length / 2)) + "}", menuText));
-            Console.SetCursorPosition(0, 1);
-            Console.Write("*");
-            Console.SetCursorPosition(0, 5);
-        }
-        private int PrintMainMenu()
-        {
-            string menuName = "Main";
-            string[] menuChoices = new string[]
-            {
-                "Read Ticket File",
-                "Create Ticket",
-                "List All Tickets",
-                "List All People",
-                "Exit Program"
-            };
-
-            Console.WriteLine(menuName + " Menu");
-            for (int i = 0; i < menuChoices.Length; i++)
-            {
-                Console.WriteLine((i + 1) + ": " + menuChoices[i]);
-            }
-
-            return menuChoices.Count();
         }
         private void RunMainMenu()
         {
@@ -301,20 +254,71 @@ namespace TicketSystem
                         ExitGracefully();
                         break;
                     case 6:
+                        InvalidMenuChoice();
                         break;
                     case 7:
+                        InvalidMenuChoice();
                         break;
                     case 8:
+                        InvalidMenuChoice();
                         break;
                     case 9:
+                        InvalidMenuChoice();
                         break;
                     case 0:
+                        InvalidMenuChoice();
                         break;
                     default:
+                        InvalidMenuChoice();
                         break;
                 }
 
             }
+        }
+        private int PrintMainMenu()
+        {
+            string menuName = "Main";
+            string[] menuChoices = new string[]
+            {
+                "Read Ticket File",
+                "Create Ticket",
+                "List All Tickets",
+                "List All People",
+                "Exit Program"
+            };
+
+            Console.WriteLine(menuName + " Menu");
+            for (int i = 0; i < menuChoices.Length; i++)
+            {
+                Console.WriteLine((i + 1) + ": " + menuChoices[i]);
+            }
+
+            return menuChoices.Count();
+        }
+        public void DisplayHeader()
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write("*");
+            }
+
+            int winWidth = Console.WindowWidth - 1;
+            Console.SetCursorPosition(winWidth, 1);
+            Console.Write("*");
+
+            Console.SetCursorPosition(0, 2);
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write("*");
+            }
+            string menuText = "Welcome to the Gregg Sperling Ticket System!";
+            Console.SetCursorPosition(0, 1);
+            Console.WriteLine(String.Format("{0," + ((Console.WindowWidth / 2) + (menuText.Length / 2)) + "}", menuText));
+            Console.SetCursorPosition(0, 1);
+            Console.Write("*");
+            Console.SetCursorPosition(0, 5);
         }
 
         public void CreateTicket()
@@ -335,7 +339,6 @@ namespace TicketSystem
                 "Priority",
                 "Emergency"
             };
-
 
             DisplayHeader();
             Console.SetCursorPosition(0, 6);
@@ -682,7 +685,6 @@ namespace TicketSystem
 
             PressEnterToContinue();
         }
-
         public void WriteFile()
         {
             var pathWithEnv = @"%USERPROFILE%\Documents\GS Ticket System-Tickets.txt";
@@ -707,20 +709,5 @@ namespace TicketSystem
                 Console.Write("The file could not be written: {0}", e.Message);
             }
         }
-
-
-        public void DoBox(String text, Int32? width, Int32? height, Int32? upperLeft, Int32? lowerRight)
-        {
-            if (upperLeft < 1 || upperLeft > 70 || upperLeft == null)
-            {
-                upperLeft = 60;
-            }
-            if (lowerRight < 1 || lowerRight > 70 || lowerRight == null)
-            {
-                lowerRight = 80;
-            }
-
-        }
-
     }
 }
